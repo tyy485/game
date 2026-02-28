@@ -123,14 +123,25 @@
             background-position: center;
             background-repeat: no-repeat;
         }
-        /* 游戏UI */
+        /* 游戏UI - 新增获取免死按钮样式 */
         .gameUI {
             width: 100%;
             display: flex;
             justify-content: space-between;
+            align-items: center;
             font-size: 20px;
             font-weight: bold;
             margin-bottom: 5px;
+        }
+        .godBtn {
+            font-size: 14px;
+            padding: 6px 12px;
+            background: #ffd700;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
         }
         #pauseBtn, #backBtn {
             font-size: 16px;
@@ -291,6 +302,44 @@
         .modal-btn:hover {
             opacity: 0.9;
         }
+        /* 新增广告弹窗样式 - 核心 */
+        #adModal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #000;
+            border: 2px solid #ffd700;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            z-index: 300;
+            display: none;
+            text-align: center;
+            overflow: hidden;
+        }
+        #adImg {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+        #adCountdown {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,215,0,0.9);
+            color: #000;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+        #adTip {
+            padding: 15px;
+            font-size: 16px;
+            color: #fff;
+            background: #2d3748;
+        }
     </style>
 </head>
 <body>
@@ -304,13 +353,15 @@
         <button class="btn settingsBtn" onclick="openSettings()">基础设置</button>
         <button class="btn customBtn" onclick="openCustomPanel()">自定义造型</button>
     </div>
-
-    <!-- 游戏界面 -->
+    <!-- 游戏界面 - 新增获取免死金牌按钮 -->
     <div id="gameScreen">
         <div class="gameUI">
             <button id="pauseBtn" onclick="togglePause()">暂停</button>
             <div>当前得分: <span id="currentScore">0</span></div>
-            <button id="backBtn" onclick="backToStart()">返回主页</button>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <button class="godBtn" onclick="showAdGetGod()">获取免死金牌</button>
+                <button id="backBtn" onclick="backToStart()">返回</button>
+            </div>
         </div>
         <div id="game">
             <div id="player"></div>
@@ -323,7 +374,6 @@
             </div>
         </div>
     </div>
-
     <!-- 商店面板 -->
     <div id="storePanel">
         <h2>免死金牌商店</h2>
@@ -333,7 +383,6 @@
         <button class="btn storeBtn" onclick="buyImmortal()">购买免死金牌</button>
         <button class="btn" onclick="closeStore()">关闭</button>
     </div>
-
     <!-- 基础设置面板 -->
     <div id="settingsPanel">
         <h2>基础设置</h2>
@@ -361,7 +410,6 @@
         <button class="btn resetBtn" onclick="startResetVerify()">重置所有游戏数据</button>
         <button class="btn" onclick="closeSettings()">关闭</button>
     </div>
-
     <!-- 自定义造型面板 -->
     <div id="customPanel">
         <h2>自定义造型设置</h2>
@@ -383,7 +431,6 @@
         </div>
         <button class="btn" onclick="closeCustomPanel()">完成设置</button>
     </div>
-
     <!-- 自定义弹窗相关 -->
     <div id="mask"></div>
     <div id="customModal">
@@ -395,13 +442,123 @@
             <button class="modal-btn modal-confirm" id="modalConfirm" onclick="modalConfirmClick()">确认</button>
         </div>
     </div>
+    <!-- 新增广告弹窗 - 核心 -->
+    <div id="adModal">
+        <img id="adImg" src="" alt="广告图片">
+        <div id="adCountdown">10</div>
+        <div id="adTip">观看广告10秒，免费获取免死金牌</div>
+    </div>
 
     <script>
         // === 全局核心配置 ===
         const currentYear = new Date().getFullYear(); // 自动获取系统年份
         let resetRemindCount = 0; // 重置确认计数器（0-3）
         let modalType = ''; // 弹窗类型：remind1/remind2/remind3/verify
-
+        // 新增广告相关全局变量
+        let adTimer = null;
+        // 内置100张广告占位图链接（免费无版权，随机播放）
+        const adImageList = [
+            "https://picsum.photos/400/250?random=1",
+            "https://picsum.photos/400/250?random=2",
+            "https://picsum.photos/400/250?random=3",
+            "https://picsum.photos/400/250?random=4",
+            "https://picsum.photos/400/250?random=5",
+            "https://picsum.photos/400/250?random=6",
+            "https://picsum.photos/400/250?random=7",
+            "https://picsum.photos/400/250?random=8",
+            "https://picsum.photos/400/250?random=9",
+            "https://picsum.photos/400/250?random=10",
+            "https://picsum.photos/400/250?random=11",
+            "https://picsum.photos/400/250?random=12",
+            "https://picsum.photos/400/250?random=13",
+            "https://picsum.photos/400/250?random=14",
+            "https://picsum.photos/400/250?random=15",
+            "https://picsum.photos/400/250?random=16",
+            "https://picsum.photos/400/250?random=17",
+            "https://picsum.photos/400/250?random=18",
+            "https://picsum.photos/400/250?random=19",
+            "https://picsum.photos/400/250?random=20",
+            "https://picsum.photos/400/250?random=21",
+            "https://picsum.photos/400/250?random=22",
+            "https://picsum.photos/400/250?random=23",
+            "https://picsum.photos/400/250?random=24",
+            "https://picsum.photos/400/250?random=25",
+            "https://picsum.photos/400/250?random=26",
+            "https://picsum.photos/400/250?random=27",
+            "https://picsum.photos/400/250?random=28",
+            "https://picsum.photos/400/250?random=29",
+            "https://picsum.photos/400/250?random=30",
+            "https://picsum.photos/400/250?random=31",
+            "https://picsum.photos/400/250?random=32",
+            "https://picsum.photos/400/250?random=33",
+            "https://picsum.photos/400/250?random=34",
+            "https://picsum.photos/400/250?random=35",
+            "https://picsum.photos/400/250?random=36",
+            "https://picsum.photos/400/250?random=37",
+            "https://picsum.photos/400/250?random=38",
+            "https://picsum.photos/400/250?random=39",
+            "https://picsum.photos/400/250?random=40",
+            "https://picsum.photos/400/250?random=41",
+            "https://picsum.photos/400/250?random=42",
+            "https://picsum.photos/400/250?random=43",
+            "https://picsum.photos/400/250?random=44",
+            "https://picsum.photos/400/250?random=45",
+            "https://picsum.photos/400/250?random=46",
+            "https://picsum.photos/400/250?random=47",
+            "https://picsum.photos/400/250?random=48",
+            "https://picsum.photos/400/250?random=49",
+            "https://picsum.photos/400/250?random=50",
+            "https://picsum.photos/400/250?random=51",
+            "https://picsum.photos/400/250?random=52",
+            "https://picsum.photos/400/250?random=53",
+            "https://picsum.photos/400/250?random=54",
+            "https://picsum.photos/400/250?random=55",
+            "https://picsum.photos/400/250?random=56",
+            "https://picsum.photos/400/250?random=57",
+            "https://picsum.photos/400/250?random=58",
+            "https://picsum.photos/400/250?random=59",
+            "https://picsum.photos/400/250?random=60",
+            "https://picsum.photos/400/250?random=61",
+            "https://picsum.photos/400/250?random=62",
+            "https://picsum.photos/400/250?random=63",
+            "https://picsum.photos/400/250?random=64",
+            "https://picsum.photos/400/250?random=65",
+            "https://picsum.photos/400/250?random=66",
+            "https://picsum.photos/400/250?random=67",
+            "https://picsum.photos/400/250?random=68",
+            "https://picsum.photos/400/250?random=69",
+            "https://picsum.photos/400/250?random=70",
+            "https://picsum.photos/400/250?random=71",
+            "https://picsum.photos/400/250?random=72",
+            "https://picsum.photos/400/250?random=73",
+            "https://picsum.photos/400/250?random=74",
+            "https://picsum.photos/400/250?random=75",
+            "https://picsum.photos/400/250?random=76",
+            "https://picsum.photos/400/250?random=77",
+            "https://picsum.photos/400/250?random=78",
+            "https://picsum.photos/400/250?random=79",
+            "https://picsum.photos/400/250?random=80",
+            "https://picsum.photos/400/250?random=81",
+            "https://picsum.photos/400/250?random=82",
+            "https://picsum.photos/400/250?random=83",
+            "https://picsum.photos/400/250?random=84",
+            "https://picsum.photos/400/250?random=85",
+            "https://picsum.photos/400/250?random=86",
+            "https://picsum.photos/400/250?random=87",
+            "https://picsum.photos/400/250?random=88",
+            "https://picsum.photos/400/250?random=89",
+            "https://picsum.photos/400/250?random=90",
+            "https://picsum.photos/400/250?random=91",
+            "https://picsum.photos/400/250?random=92",
+            "https://picsum.photos/400/250?random=93",
+            "https://picsum.photos/400/250?random=94",
+            "https://picsum.photos/400/250?random=95",
+            "https://picsum.photos/400/250?random=96",
+            "https://picsum.photos/400/250?random=97",
+            "https://picsum.photos/400/250?random=98",
+            "https://picsum.photos/400/250?random=99",
+            "https://picsum.photos/400/250?random=100"
+        ];
         // === 存档系统 - 核心数据结构 ===
         let gameData = {
             totalScore: 0,          // 玩家总得分（累积）
@@ -414,7 +571,6 @@
             playerImg: '',          // 玩家自定义图片Base64
             obsImg: ''              // 障碍物自定义图片Base64
         };
-
         // === DOM元素获取 ===
         // 基础面板
         const startScreen = document.getElementById('startScreen');
@@ -441,6 +597,10 @@
         const modalConfirm = document.getElementById('modalConfirm');
         // 免死与游戏状态
         const timerEl = document.getElementById('timer');
+        // 新增广告DOM元素
+        const adModal = document.getElementById('adModal');
+        const adImg = document.getElementById('adImg');
+        const adCountdown = document.getElementById('adCountdown');
         let currentScore = 0;
         let gameRunning = false;
         let isPaused = false;
@@ -451,7 +611,6 @@
         let obstacles = [];
         let lastObstacleTime = 0;
         let obstacleSpeed = 3;
-
         // === 自定义弹窗核心方法 ===
         // 打开弹窗：type=弹窗类型，title=标题，content=内容，needInput=是否需要输入框
         function openModal(type, title, content, needInput = false) {
@@ -493,7 +652,6 @@
                     break;
             }
         }
-
         // === 重置验证核心逻辑 - 三步确认+年份验证 ===
         // 开始重置验证（第一步）
         function startResetVerify() {
@@ -550,7 +708,6 @@
             resetRemindCount = 0;
             modalType = '';
         }
-
         // === 重置所有游戏数据（最终执行） ===
         function resetAllGameData() {
             gameData = {
@@ -582,7 +739,6 @@
                 closeModalAndResetCount();
             }, 3000);
         }
-
         // === 存档核心方法 ===
         function loadGameData() {
             const saved = localStorage.getItem('fingerDodgeData');
@@ -603,7 +759,6 @@
             totalScoreEl.innerText = gameData.totalScore;
             immortalLevelEl.innerText = gameData.immortalLevel;
         }
-
         // === 自定义造型核心方法 ===
         function applyCustomStyles() {
             // 玩家造型：图片优先于颜色
@@ -686,7 +841,6 @@
             openModal('success', '恢复成功', '已恢复默认造型！');
             setTimeout(closeModalAndResetCount, 2000);
         }
-
         // === 面板控制方法 ===
         function openStore() {
             if (gameOver) return;
@@ -704,7 +858,6 @@
         }
         function openCustomPanel() { customPanel.style.display = 'flex'; }
         function closeCustomPanel() { customPanel.style.display = 'none'; }
-
         // === 游戏核心逻辑 ===
         function startGame() {
             currentScore = 0;
@@ -735,6 +888,7 @@
             saveGameData();
             // 清理计时器和障碍物
             if (immortalTimer) clearInterval(immortalTimer);
+            if (adTimer) clearInterval(adTimer);
             obstacles.forEach(obs => obs.el.remove());
             obstacles = [];
             // 重置状态
@@ -744,6 +898,7 @@
             isImmortal = false;
             immortalTime = 0;
             timerEl.style.display = 'none';
+            adModal.style.display = 'none';
             resetRemindCount = 0; // 回到主页重置计数器
             // 关闭所有面板和弹窗
             gameScreen.style.display = 'none';
@@ -855,7 +1010,7 @@
                 const obs = obstacles[i];
                 obs.y += obstacleSpeed;
                 obs.el.style.top = obs.y + 'px';
-                // 碰撞检测
+                // 碰撞检测 - 免死金牌正常生效
                 if (!isImmortal && checkCollision(player, obs.el)) {
                     gameOver = true;
                     gameData.totalScore += currentScore;
@@ -874,7 +1029,6 @@
             }
             requestAnimationFrame(gameLoop);
         }
-
         // === 触屏控制 ===
         game.addEventListener('touchmove', (e) => {
             if (gameOver || isPaused) return;
@@ -884,7 +1038,43 @@
             playerX = Math.max(0, Math.min(playerX, game.clientWidth - player.clientWidth));
             player.style.left = playerX + 'px';
         });
-
+        // === 新增广告相关核心方法 - 核心功能 ===
+        // 显示广告并获取免死金牌
+        function showAdGetGod() {
+            // 游戏结束/暂停时无法点击
+            if (gameOver || isPaused) {
+                openModal('error', '操作失败', '游戏未开始或已暂停，无法获取免死金牌！');
+                return;
+            }
+            // 暂停游戏
+            isPaused = true;
+            // 随机选择一张广告图
+            const randomIndex = Math.floor(Math.random() * adImageList.length);
+            adImg.src = adImageList[randomIndex];
+            // 重置倒计时
+            let adTime = 10;
+            adCountdown.innerText = adTime;
+            // 显示广告弹窗
+            adModal.style.display = 'block';
+            // 广告倒计时
+            if (adTimer) clearInterval(adTimer);
+            adTimer = setInterval(() => {
+                adTime--;
+                adCountdown.innerText = adTime;
+                // 广告结束
+                if (adTime <= 0) {
+                    clearInterval(adTimer);
+                    adModal.style.display = 'none';
+                    // 激活免死金牌（时长随等级提升）
+                    activateImmortal(gameData.baseTime);
+                    // 恢复游戏
+                    isPaused = false;
+                    // 提示获取成功
+                    openModal('success', '获取成功', `已获得${gameData.baseTime}秒免死金牌！`);
+                    setTimeout(closeModalAndResetCount, 1500);
+                }
+            }, 1000);
+        }
         // === 页面初始化 ===
         window.onload = function() {
             loadGameData();
@@ -896,6 +1086,11 @@
         customModal.addEventListener('click', (e) => {
             e.stopPropagation();
         });
+        // 阻止广告弹窗内部点击冒泡
+        adModal.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
     </script>
 </body>
 </html>
+
