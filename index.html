@@ -456,7 +456,6 @@
         <div id="adCountdown">10</div>
         <div id="adTip">观看广告10秒，免费获取免死金牌</div>
     </div>
-
     <script>
         // === 全局核心配置 ===
         const currentYear = new Date().getFullYear(); // 自动获取系统年份
@@ -517,7 +516,6 @@
         let obstacles = [];
         let lastObstacleTime = 0;
         let obstacleSpeed = 3;
-
         // === 20个离线手绘广告配置（背景色+文字，无网络依赖） ===
         const adDrawList = [
             {bg: "#ff4d4f", text: "广告1\n精品小游戏推荐"},
@@ -541,7 +539,6 @@
             {bg: "#ff69b4", text: "广告19\n跨服竞技赛开启"},
             {bg: "#gold", text: "广告20\n绝版外观限时领"}
         ];
-
         // === 自定义弹窗核心方法 ===
         function openModal(type, title, content, needInput = false) {
             mask.style.display = 'block';
@@ -571,7 +568,6 @@
                 case 'verify': handleVerifyConfirm(); break;
             }
         }
-
         // === 重置验证核心逻辑 - 三步确认+年份验证 ===
         function startResetVerify() {
             resetRemindCount = 1;
@@ -602,7 +598,6 @@
             resetRemindCount = 0;
             modalType = '';
         }
-
         // === 重置所有游戏数据 ===
         function resetAllGameData() {
             gameData = {
@@ -618,7 +613,6 @@
             openModal('success', '重置成功', '所有游戏数据已恢复为初始状态！');
             setTimeout(closeModalAndResetCount, 3000);
         }
-
         // === 存档核心方法 ===
         function loadGameData() {
             const saved = localStorage.getItem('fingerDodgeData');
@@ -639,7 +633,6 @@
             totalScoreEl.innerText = gameData.totalScore;
             immortalLevelEl.innerText = gameData.immortalLevel;
         }
-
         // === 自定义造型核心方法 ===
         function applyCustomStyles() {
             if (gameData.playerImg) {
@@ -714,7 +707,6 @@
             openModal('success', '恢复成功', '已恢复默认造型！');
             setTimeout(closeModalAndResetCount, 2000);
         }
-
         // === 面板控制方法 ===
         function openStore() {
             if (gameOver) return;
@@ -732,7 +724,6 @@
         }
         function openCustomPanel() { customPanel.style.display = 'flex'; }
         function closeCustomPanel() { customPanel.style.display = 'none'; }
-
         // === 游戏核心逻辑 ===
         function startGame() {
             currentScore = 0;
@@ -777,9 +768,28 @@
             customPanel.style.display = 'none';
             closeModalAndResetCount();
         }
+        // 修复核心：暂停时清除免死计时器，继续时重新启动
         function togglePause() {
             isPaused = !isPaused;
             pauseMenu.style.display = isPaused ? 'flex' : 'none';
+            // 暂停：清除计时器，停止计时
+            if (isPaused && immortalTimer) {
+                clearInterval(immortalTimer);
+                immortalTimer = null;
+            }
+            // 继续：如果免死还在生效，重新启动计时器
+            else if (!isPaused && isImmortal && immortalTime > 0) {
+                immortalTimer = setInterval(() => {
+                    immortalTime--;
+                    timerEl.innerText = immortalTime;
+                    if (immortalTime <= 0) {
+                        clearInterval(immortalTimer);
+                        immortalTimer = null;
+                        isImmortal = false;
+                        timerEl.style.display = 'none';
+                    }
+                }, 1000);
+            }
         }
         function buyImmortal() {
             const availableScore = currentScore + gameData.totalScore;
@@ -812,16 +822,21 @@
             immortalTime += addSec;
             timerEl.style.display = 'block';
             timerEl.innerText = immortalTime;
+            // 若已有计时器先清除，避免多计时器叠加
             if (immortalTimer) clearInterval(immortalTimer);
-            immortalTimer = setInterval(() => {
-                immortalTime--;
-                timerEl.innerText = immortalTime;
-                if (immortalTime <= 0) {
-                    clearInterval(immortalTimer);
-                    isImmortal = false;
-                    timerEl.style.display = 'none';
-                }
-            }, 1000);
+            // 非暂停状态才启动计时器
+            if (!isPaused) {
+                immortalTimer = setInterval(() => {
+                    immortalTime--;
+                    timerEl.innerText = immortalTime;
+                    if (immortalTime <= 0) {
+                        clearInterval(immortalTimer);
+                        immortalTimer = null;
+                        isImmortal = false;
+                        timerEl.style.display = 'none';
+                    }
+                }, 1000);
+            }
         }
         function saveSettings() {
             gameData.obstacleFreq = parseInt(document.getElementById('freqSelect').value);
@@ -891,7 +906,6 @@
             }
             requestAnimationFrame(gameLoop);
         }
-
         // === 触屏控制 ===
         game.addEventListener('touchmove', (e) => {
             if (gameOver || isPaused) return;
@@ -901,7 +915,6 @@
             playerX = Math.max(0, Math.min(playerX, game.clientWidth - player.clientWidth));
             player.style.left = playerX + 'px';
         });
-
         // === 离线广告获取免死金牌核心方法 ===
         function showAdGetGod() {
             if (gameOver || isPaused) {
@@ -910,6 +923,7 @@
             }
             // 暂停游戏
             isPaused = true;
+            pauseMenu.style.display = 'flex';
             // 随机选择20个手绘广告中的一个
             const randomIndex = Math.floor(Math.random() * adDrawList.length);
             adDraw.style.background = adDrawList[randomIndex].bg;
@@ -931,13 +945,13 @@
                     activateImmortal(gameData.baseTime);
                     // 恢复游戏
                     isPaused = false;
+                    pauseMenu.style.display = 'none';
                     // 提示获取成功
                     openModal('success', '获取成功', `已获得${gameData.baseTime}秒免死金牌！`);
                     setTimeout(closeModalAndResetCount, 1500);
                 }
             }, 1000);
         }
-
         // === 页面初始化 ===
         window.onload = function() {
             loadGameData();
@@ -951,4 +965,3 @@
     </script>
 </body>
 </html>
-
