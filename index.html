@@ -2,112 +2,997 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>指尖躲避</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+            touch-action: none;
+            font-family: "Microsoft Yahei", sans-serif;
         }
         body {
-            font-family: Arial, sans-serif;
-            background: #1a1a1a;
-            color: white;
+            background: #1e1e1e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
             overflow: hidden;
-            touch-action: none;
+            color: #fff;
         }
-        #gameContainer {
-            position: relative;
+        /* 版本选择界面 */
+        #versionScreen {
             width: 100vw;
             height: 100vh;
-            max-width: 500px;
-            margin: 0 auto;
-            background: #000;
-            overflow: hidden;
-        }
-        #gameCanvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-        .ui {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-        }
-        .btn {
-            position: absolute;
-            padding: 12px 20px;
-            font-size: 16px;
-            background: #2196F3;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
             z-index: 10;
         }
-        /* 免死按钮（上面，不遮挡） */
-        #getImmortalBtn {
-            top: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #FF9800;
+        .versionTitle {
+            font-size: 40px;
+            margin-bottom: 50px;
+            color: #ffd700;
         }
-        #immortalShopBtn {
-            top: 110px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #9C27B0;
+        .versionBtn {
+            padding: 15px 40px;
+            font-size: 24px;
+            border: none;
+            border-radius: 15px;
+            color: #fff;
+            margin: 20px 0;
+            width: 80%;
+            max-width: 350px;
+            cursor: pointer;
         }
-        /* 银行按钮（最下面） */
-        #bankBtn {
+        .phoneVersion {
+            background: #3182ce;
+        }
+        .phoneVersion:hover {
+            background: #2563eb;
+        }
+        .pcVersion {
+            background: #f59e0b;
+        }
+        .pcVersion:hover {
+            background: #d97706;
+        }
+        /* 页面容器 */
+        #startScreen, #gameScreen {
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 5;
+        }
+        #gameScreen {
+            justify-content: flex-start;
+            padding-top: 20px;
+        }
+        /* 返回上一级按钮 */
+        .backPreBtn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 18px;
+            padding: 8px 15px;
+            background: #64748b;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            z-index: 6;
+        }
+        /* 主界面样式 - 标题仅遮盖指尖二字 */
+        .titleBox {
+            position: relative;
+            margin-bottom: 20px;
+            font-size: 36px;
+            color: #ffd700;
+        }
+        .pcTitle .tipian {
+            position: relative;
+            display: inline-block;
+        }
+        .pcTitle .tipian::after {
+            content: "键盘";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ef4444;
+            color: #ffd700;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .scoreBoard {
+            font-size: 20px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .btn {
+            padding: 12px 30px;
+            font-size: 20px;
+            border: none;
+            border-radius: 10px;
+            background: #3182ce;
+            color: #fff;
+            margin: 10px 0;
+            width: 80%;
+            max-width: 300px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #2563eb;
+        }
+        .storeBtn {
+            background: #f59e0b;
+        }
+        .storeBtn:hover {
+            background: #d97706;
+        }
+        .settingsBtn {
+            background: #64748b;
+        }
+        .settingsBtn:hover {
+            background: #475569;
+        }
+        .customBtn {
+            background: #8b5cf6;
+        }
+        .customBtn:hover {
+            background: #7c3aed;
+        }
+        .resetBtn {
+            background: #ef4444;
+            margin-top: 20px;
+        }
+        .resetBtn:hover {
+            background: #dc2626;
+        }
+        /* 游戏区域 */
+        #game {
+            width: 100%;
+            height: 70vh;
+            background: #2d3748;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #fff;
+            margin-top: 10px;
+        }
+        #player {
+            width: 40px;
+            height: 40px;
+            position: absolute;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: #4CAF50;
+            border-radius: 8px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .obstacle {
+            width: 60px;
+            height: 20px;
+            position: absolute;
+            border-radius: 4px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        /* 游戏UI - 局内金银行按钮（仅局内显示） */
+        .gameUI {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            padding: 0 5px;
+        }
+        .gameUIMid {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        #pauseBtn, #backBtn, #bankGameBtn {
+            font-size: 16px;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+        }
+        #pauseBtn {
+            background: #f6ad55;
+        }
+        #backBtn {
+            background: #64748b;
+        }
+        /* 局内金银行按钮 - 金色高亮 */
+        #bankGameBtn {
+            background: #ffd700;
+            color: #1e1e1e;
+            font-weight: bold;
+        }
+        #bankGameBtn:hover {
+            background: #fcd34d;
+        }
+        /* 免死计时器 */
+        #timer {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: #ffd700;
+            font-size: 18px;
+            padding: 5px 15px;
+            border-radius: 20px;
+            z-index: 10;
+            display: none;
+        }
+        /* 暂停面板 - 局内银行按钮 */
+        #pauseMenu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+        }
+        #pauseMenu .bankBtn {
+            background: #ffd700;
+            color: #1e1e1e;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        #pauseMenu .bankBtn:hover {
+            background: #fcd34d;
+        }
+        /* 商店/设置/自定义面板通用 */
+        #storePanel, #settingsPanel, #customPanel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+        #storePanel h2, #settingsPanel h2, #customPanel h2 {
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+        #storeInfo {
+            font-size: 18px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .settingItem {
+            width: 100%;
+            max-width: 300px;
+            margin: 15px 0;
+            text-align: left;
+        }
+        .settingItem label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 18px;
+        }
+        .settingItem select, .settingItem input {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+        }
+        /* 隐藏文件选择框 */
+        .fileInput {
+            display: none;
+        }
+        /* 遮罩层 */
+        #mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.9);
+            z-index: 199;
+            display: none;
+        }
+        /* 自定义弹窗核心样式 */
+        #customModal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #2d3748;
+            border: 2px solid #ffd700;
+            border-radius: 12px;
+            padding: 30px 25px;
+            width: 90%;
+            max-width: 350px;
+            z-index: 200;
+            display: none;
+            text-align: center;
+        }
+        .modal-title {
+            font-size: 22px;
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .modal-content {
+            font-size: 18px;
+            color: #f1f1f1;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        .modal-input {
+            width: 180px;
+            padding: 12px;
+            font-size: 20px;
+            text-align: center;
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 25px;
+            background: #4a5568;
+            color: #fff;
+        }
+        .modal-input::placeholder {
+            color: #9ca3af;
+        }
+        .modal-btn-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .modal-btn {
+            flex: 1;
+            padding: 10px 0;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .modal-cancel {
+            background: #ef4444;
+            color: #fff;
+        }
+        .modal-confirm {
+            background: #3182ce;
+            color: #fff;
+        }
+        .modal-btn:hover {
+            opacity: 0.9;
         }
     </style>
 </head>
 <body>
-    <div id="gameContainer">
-        <canvas id="gameCanvas"></canvas>
-        <div class="ui">分数: <span id="score">0</span></div>
-        <button class="btn" id="getImmortalBtn">获取免死</button>
-        <button class="btn" id="immortalShopBtn">免死商店</button>
-        <button class="btn" id="bankBtn">银行</button>
+    <!-- 版本选择界面（双版本数据互通） -->
+    <div id="versionScreen">
+        <div class="versionTitle">选择游玩版本</div>
+        <button class="versionBtn phoneVersion" onclick="selectVersion('phone')">手机版</button>
+        <button class="versionBtn pcVersion" onclick="selectVersion('pc')">电脑版</button>
+    </div>
+
+    <!-- 主界面（移除所有银行相关，仅局内显示） -->
+    <div id="startScreen">
+        <button class="backPreBtn" onclick="backToVersion()">回到上一级</button>
+        <div class="titleBox" id="titleBox">
+            <span class="tipian">指尖</span>躲避
+        </div>
+        <div class="scoreBoard">总得分: <span id="totalScore">0</span></div>
+        <div class="scoreBoard">免死等级: <span id="immortalLevel">1</span></div>
+        <button class="btn" onclick="startGame()">开始游戏</button>
+        <button class="btn storeBtn" onclick="openStore()">免死商店</button>
+        <button class="btn settingsBtn" onclick="openSettings()">基础设置</button>
+        <button class="btn customBtn" onclick="openCustomPanel()">自定义造型</button>
+    </div>
+
+    <!-- 游戏界面（局内专属银行，金色按钮） -->
+    <div id="gameScreen">
+        <div class="gameUI">
+            <button id="pauseBtn" onclick="togglePause()">暂停</button>
+            <div class="gameUIMid">
+                <div>当前得分: <span id="currentScore">0</span></div>
+                <!-- 局内金银行按钮 - 核心功能 -->
+                <button id="bankGameBtn" onclick="saveScoreToTotal()">存总得分</button>
+            </div>
+            <button id="backBtn" onclick="backToStart()">返回主页</button>
+        </div>
+        <div id="game">
+            <div id="player"></div>
+            <div id="timer">10</div>
+            <!-- 暂停面板 - 保留局内银行按钮 -->
+            <div id="pauseMenu">
+                <h2>游戏暂停</h2>
+                <button class="btn" onclick="togglePause()">继续游戏</button>
+                <button class="btn bankBtn" onclick="saveScoreToTotal()">存当前得分到总得分</button>
+                <button class="btn" onclick="backToStart()">返回主页</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 免死商店面板（仅显示总得分，无单独存款） -->
+    <div id="storePanel">
+        <h2>免死金牌商店</h2>
+        <div id="storeInfo">当前总得分: <span id="storeTotalScore">0</span></div>
+        <div id="storeInfo">购买价格: <span id="buyPrice">10</span> 分</div>
+        <div id="storeInfo">获得时长: <span id="addTime">10</span> 秒</div>
+        <button class="btn storeBtn" onclick="buyImmortal()">购买免死金牌</button>
+        <button class="btn" onclick="closeStore()">关闭</button>
+    </div>
+
+    <!-- 基础设置面板 -->
+    <div id="settingsPanel">
+        <h2>基础设置</h2>
+        <div class="settingItem">
+            <label>障碍物频率</label>
+            <select id="freqSelect">
+                <option value="2000">很低</option>
+                <option value="1500">低</option>
+                <option value="1000" selected>中</option>
+                <option value="700">高</option>
+                <option value="500">很高</option>
+                <option value="300">特别高</option>
+                <option value="150">最高</option>
+            </select>
+        </div>
+        <div class="settingItem">
+            <label>玩家方块颜色</label>
+            <input type="color" id="playerColor" value="#3182ce">
+        </div>
+        <div class="settingItem">
+            <label>障碍物颜色</label>
+            <input type="color" id="obsColor" value="#e53e3e">
+        </div>
+        <button class="btn" onclick="saveSettings()">保存设置</button>
+        <button class="btn resetBtn" onclick="startResetVerify()">重置所有游戏数据</button>
+        <button class="btn" onclick="closeSettings()">关闭</button>
+    </div>
+
+    <!-- 自定义造型面板 -->
+    <div id="customPanel">
+        <h2>自定义造型设置</h2>
+        <div class="settingItem">
+            <label>选择玩家方块图片</label>
+            <input type="file" id="playerImgSelector" class="fileInput" accept="image/*">
+            <button class="btn customBtn" onclick="document.getElementById('playerImgSelector').click()">从相册选择图片</button>
+            <p style="font-size:14px; margin-top:5px; color:#ccc;">支持PNG/JPG格式，自动适配尺寸</p>
+        </div>
+        <div class="settingItem">
+            <label>选择障碍物图片</label>
+            <input type="file" id="obsImgSelector" class="fileInput" accept="image/*">
+            <button class="btn customBtn" onclick="document.getElementById('obsImgSelector').click()">从相册选择图片</button>
+            <p style="font-size:14px; margin-top:5px; color:#ccc;">支持PNG/JPG格式，自动适配尺寸</p>
+        </div>
+        <div class="settingItem">
+            <label>恢复默认造型</label>
+            <button class="btn" onclick="restoreDefaultStyles()">恢复默认</button>
+        </div>
+        <button class="btn" onclick="closeCustomPanel()">完成设置</button>
+    </div>
+
+    <!-- 自定义弹窗相关 -->
+    <div id="mask"></div>
+    <div id="customModal">
+        <div class="modal-title" id="modalTitle">温馨提示</div>
+        <div class="modal-content" id="modalContent">确认执行此操作吗？</div>
+        <input type="number" class="modal-input" id="modalInput" placeholder="输入验证信息" style="display:none;">
+        <div class="modal-btn-group">
+            <button class="modal-btn modal-cancel" onclick="closeModalAndResetCount()">取消</button>
+            <button class="modal-btn modal-confirm" id="modalConfirm" onclick="modalConfirmClick()">确认</button>
+        </div>
     </div>
 
     <script>
-        // 游戏数据
-        let score = 0;
+        // === 全局核心配置（双版本数据互通，共用localStorage） ===
+        const currentYear = new Date().getFullYear();
+        let resetRemindCount = 0;
+        let modalType = '';
+        let gameVersion = ''; // phone/pc 仅控制操作方式，不影响数据
+        const keyStep = 15; // 电脑版键盘步长
+
+        // === 存档数据结构（移除银行字段，仅保留总得分，双版本共用） ===
+        let gameData = {
+            totalScore: 0,          // 唯一总得分，局内存入直接合并，双版本互通
+            immortalLevel: 1,       // 免死等级，双版本互通
+            buyPrice: 10,           // 免死购买价格，双版本互通
+            baseTime: 10,           // 免死时长，双版本互通
+            obstacleFreq: 1000,     // 障碍物频率，双版本互通
+            playerColor: '#3182ce', // 玩家颜色，双版本互通
+            obsColor: '#e53e3e',    // 障碍物颜色，双版本互通
+            playerImg: '',          // 玩家图片，双版本互通
+            obsImg: ''              // 障碍物图片，双版本互通
+        };
+
+        // === DOM元素获取（移除银行相关，保留局内存总得分按钮） ===
+        const versionScreen = document.getElementById('versionScreen');
+        const titleBox = document.getElementById('titleBox');
+        // 核心分数UI（双版本共用）
+        const totalScoreEl = document.getElementById('totalScore');
+        const immortalLevelEl = document.getElementById('immortalLevel');
+        const currentScoreEl = document.getElementById('currentScore');
+        const storeTotalScoreEl = document.getElementById('storeTotalScore');
+        const buyPriceEl = document.getElementById('buyPrice');
+        const addTimeEl = document.getElementById('addTime');
+        // 面板元素
+        const startScreen = document.getElementById('startScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const game = document.getElementById('game');
+        const player = document.getElementById('player');
+        const pauseMenu = document.getElementById('pauseMenu');
+        const storePanel = document.getElementById('storePanel');
+        const settingsPanel = document.getElementById('settingsPanel');
+        const customPanel = document.getElementById('customPanel');
+        // 免死与游戏状态
+        const timerEl = document.getElementById('timer');
+        let currentScore = 0;
+        let gameRunning = false;
+        let isPaused = false;
+        let gameOver = false;
+        let isImmortal = false;
         let immortalTime = 0;
-        let immortalShopPrice = 50;
+        let immortalTimer = null;
+        let obstacles = [];
+        let lastObstacleTime = 0;
+        let obstacleSpeed = 3;
+        // 弹窗元素
+        const mask = document.getElementById('mask');
+        const customModal = document.getElementById('customModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalContent = document.getElementById('modalContent');
+        const modalInput = document.getElementById('modalInput');
+        const modalConfirm = document.getElementById('modalConfirm');
 
-        // 按钮功能
-        document.getElementById('getImmortalBtn').addEventListener('click', () => {
-            immortalTime += 3;
-            alert('获得免死金牌！无敌3秒！');
-        });
-
-        document.getElementById('immortalShopBtn').addEventListener('click', () => {
-            if (score >= immortalShopPrice) {
-                score -= immortalShopPrice;
-                immortalTime += 5;
-                immortalShopPrice += 20;
-                alert('免死时间延长5秒！');
-                document.getElementById('score').textContent = score;
+        // === 自定义弹窗核心方法 ===
+        function openModal(type, title, content, needInput = false) {
+            mask.style.display = 'block';
+            customModal.style.display = 'block';
+            modalType = type;
+            modalTitle.innerText = title;
+            modalContent.innerText = content;
+            if (needInput) {
+                modalInput.style.display = 'block';
+                modalInput.value = '';
+                modalInput.focus();
             } else {
-                alert('分数不够！');
+                modalInput.style.display = 'none';
             }
+        }
+        function closeModalAndResetCount() {
+            mask.style.display = 'none';
+            customModal.style.display = 'none';
+            resetRemindCount = 0;
+            modalType = '';
+        }
+        function modalConfirmClick() {
+            switch (modalType) {
+                case 'remind1': handleRemind1Confirm(); break;
+                case 'remind2': handleRemind2Confirm(); break;
+                case 'remind3': handleRemind3Confirm(); break;
+                case 'verify': handleVerifyConfirm(); break;
+                case 'success': closeModalAndResetCount(); break;
+                case 'error': closeModalAndResetCount(); break;
+                case 'gameOver': closeModalAndResetCount(); break;
+            }
+        }
+
+        // === 重置验证逻辑（重置所有互通数据） ===
+        function startResetVerify() {
+            resetRemindCount = 1;
+            openModal('remind1','第一次确认','确定要重置游戏数据吗？数据清除后将不可恢复，还需确认2次');
+        }
+        function handleRemind1Confirm() {
+            resetRemindCount = 2;
+            openModal('remind2','第二次确认','最后警告！重置将清除所有得分、等级、自定义造型和设置，还需确认1次');
+        }
+        function handleRemind2Confirm() {
+            resetRemindCount = 3;
+            openModal('remind3','第三次确认','即将进入验证环节！请确认是否继续，下一步需输入当前年份完成最终验证');
+        }
+        function handleVerifyConfirm() {
+            const inputYear = parseInt(modalInput.value);
+            if (isNaN(inputYear) || inputYear !== currentYear) {
+                modalContent.innerText = `年份输入错误！请输入正确年份：${currentYear}`;
+                modalInput.value = '';
+                modalInput.focus();
+                return;
+            }
+            resetAllGameData();
+            mask.style.display = 'none';
+            customModal.style.display = 'none';
+            resetRemindCount = 0;
+            modalType = '';
+        }
+
+        // === 重置所有数据（双版本共用数据全部恢复初始） ===
+        function resetAllGameData() {
+            gameData = { 
+                totalScore:0, immortalLevel:1, buyPrice:10, baseTime:10, 
+                obstacleFreq:1000, playerColor:'#3182ce', obsColor:'#e53e3e', 
+                playerImg:'', obsImg:'' 
+            };
+            saveGameData();
+            applyCustomStyles();
+            document.getElementById('freqSelect').value = gameData.obstacleFreq;
+            document.getElementById('playerColor').value = gameData.playerColor;
+            document.getElementById('obsColor').value = gameData.obsColor;
+            openModal('success','重置成功','所有游戏数据已恢复为初始状态！');
+            setTimeout(closeModalAndResetCount, 3000);
+        }
+
+        // === 存档核心方法（localStorage单文件存储，双版本完全互通） ===
+        function loadGameData() {
+            const saved = localStorage.getItem('fingerDodgeData');
+            if (saved) {
+                gameData = JSON.parse(saved); // 双版本读取同一套数据
+                totalScoreEl.innerText = gameData.totalScore;
+                immortalLevelEl.innerText = gameData.immortalLevel;
+                buyPriceEl.innerText = gameData.buyPrice;
+                addTimeEl.innerText = gameData.baseTime;
+                document.getElementById('freqSelect').value = gameData.obstacleFreq;
+                document.getElementById('playerColor').value = gameData.playerColor;
+                document.getElementById('obsColor').value = gameData.obsColor;
+                applyCustomStyles();
+            }
+        }
+        function saveGameData() {
+            localStorage.setItem('fingerDodgeData', JSON.stringify(gameData)); // 双版本保存同一套数据
+            totalScoreEl.innerText = gameData.totalScore;
+            immortalLevelEl.innerText = gameData.immortalLevel;
+        }
+
+        // === 自定义造型方法（双版本互通，设置一次两边生效） ===
+        function applyCustomStyles() {
+            if (gameData.playerImg) {
+                player.style.backgroundImage = `url(${gameData.playerImg})`;
+                player.style.backgroundColor = 'transparent';
+            } else {
+                player.style.backgroundImage = 'none';
+                player.style.backgroundColor = gameData.playerColor;
+            }
+            obstacles.forEach(obs => {
+                if (gameData.obsImg) {
+                    obs.el.style.backgroundImage = `url(${gameData.obsImg})`;
+                    obs.el.style.backgroundColor = 'transparent';
+                } else {
+                    obs.el.style.backgroundImage = 'none';
+                    obs.el.style.backgroundColor = gameData.obsColor;
+                }
+            });
+        }
+        function initImageSelectors() {
+            document.getElementById('playerImgSelector').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                readImageFile(file, (base64) => {
+                    gameData.playerImg = base64;
+                    saveGameData();
+                    applyCustomStyles();
+                    openModal('success', '设置成功', '玩家造型已更新！');
+                    setTimeout(closeModalAndResetCount, 2000);
+                });
+            });
+            document.getElementById('obsImgSelector').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                readImageFile(file, (base64) => {
+                    gameData.obsImg = base64;
+                    saveGameData();
+                    applyCustomStyles();
+                    openModal('success', '设置成功', '障碍物造型已更新！');
+                    setTimeout(closeModalAndResetCount, 2000);
+                });
+            });
+        }
+        function readImageFile(file, callback) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = file === document.getElementById('playerImgSelector').files[0] ? 40 : 60;
+                    canvas.height = file === document.getElementById('playerImgSelector').files[0] ? 40 : 20;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    callback(canvas.toDataURL('image/png'));
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        function restoreDefaultStyles() {
+            gameData.playerImg = ''; gameData.obsImg = '';
+            gameData.playerColor = '#3182ce'; gameData.obsColor = '#e53e3e';
+            document.getElementById('playerColor').value = '#3182ce';
+            document.getElementById('obsColor').value = '#e53e3e';
+            saveGameData();
+            applyCustomStyles();
+            openModal('success', '恢复成功', '已恢复默认造型！');
+            setTimeout(closeModalAndResetCount, 2000);
+        }
+
+        // === 局内核心功能：存当前得分到总得分（仅局内可操作，无单独存款） ===
+        function saveScoreToTotal() {
+            if (currentScore <= 0) {
+                openModal('error', '操作失败', '当前无得分可存入总得分！');
+                return;
+            }
+            // 局内得分直接合并到总得分，无单独银行，双版本互通
+            gameData.totalScore += currentScore;
+            const saveNum = currentScore;
+            currentScore = 0;
+            currentScoreEl.innerText = currentScore;
+            saveGameData();
+            openModal('success', '存款成功', `已将${saveNum}分存入总得分！当前总得分：${gameData.totalScore}`);
+            setTimeout(closeModalAndResetCount, 2000);
+        }
+
+        // === 面板控制方法（双版本共用面板，数据互通） ===
+        function selectVersion(version) {
+            gameVersion = version; // 仅记录操作版本，不影响数据
+            versionScreen.style.display = 'none';
+            startScreen.style.display = 'flex';
+            // PC版仅遮盖指尖二字，保留躲避，手机版不变
+            titleBox.classList.toggle('pcTitle', version === 'pc');
+        }
+        function backToVersion() {
+            startScreen.style.display = 'none';
+            versionScreen.style.display = 'flex';
+            titleBox.classList.remove('pcTitle');
+            gameVersion = '';
+            // 关闭所有面板，不影响互通数据
+            storePanel.style.display = 'none';
+            settingsPanel.style.display = 'none';
+            customPanel.style.display = 'none';
+            closeModalAndResetCount();
+        }
+        function openStore() {
+            if (gameOver) return;
+            storeTotalScoreEl.innerText = gameData.totalScore; // 显示唯一总得分
+            storePanel.style.display = 'flex';
+        }
+        function closeStore() { storePanel.style.display = 'none'; }
+        function openSettings() {
+            settingsPanel.style.display = 'flex';
+            resetRemindCount = 0;
+        }
+        function closeSettings() {
+            settingsPanel.style.display = 'none';
+            resetRemindCount = 0;
+        }
+        function openCustomPanel() { customPanel.style.display = 'flex'; }
+        function closeCustomPanel() { customPanel.style.display = 'none'; }
+
+        // === 游戏核心逻辑（双版本共用，仅控制方式不同） ===
+        function startGame() {
+            currentScore = 0;
+            currentScoreEl.innerText = currentScore;
+            gameOver = false;
+            isPaused = false;
+            isImmortal = false;
+            immortalTime = 0;
+            timerEl.style.display = 'none';
+            obstacles.forEach(obs => obs.el.remove());
+            obstacles = [];
+            lastObstacleTime = 0;
+            obstacleSpeed = 3;
+            applyCustomStyles();
+            startScreen.style.display = 'none';
+            gameScreen.style.display = 'flex';
+            if (!gameRunning) {
+                gameRunning = true;
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+        function backToStart() {
+            // 未存的当前得分自动合并到总得分，避免丢失
+            if (currentScore > 0) {
+                gameData.totalScore += currentScore;
+                currentScore = 0;
+                saveGameData();
+            }
+            // 修复免死无限时间bug
+            if (immortalTimer) {
+                clearInterval(immortalTimer);
+                immortalTimer = null;
+            }
+            isImmortal = false;
+            immortalTime = 0;
+            timerEl.style.display = 'none';
+            // 清理资源
+            obstacles.forEach(obs => obs.el.remove());
+            obstacles = [];
+            gameRunning = false;
+            isPaused = false;
+            gameOver = false;
+            resetRemindCount = 0;
+            // 切回主界面，保留互通数据
+            gameScreen.style.display = 'none';
+            startScreen.style.display = 'flex';
+            pauseMenu.style.display = 'none';
+            closeModalAndResetCount();
+        }
+
+        function togglePause() {
+            isPaused = !isPaused;
+            pauseMenu.style.display = isPaused ? 'flex' : 'none';
+        }
+
+        // 免死购买（仅扣唯一总得分，双版本互通）
+        function buyImmortal() {
+            if (gameData.totalScore < gameData.buyPrice) {
+                openModal('error', '操作失败', '总得分不足，无法购买免死金牌！');
+                return;
+            }
+            gameData.totalScore -= gameData.buyPrice;
+            gameData.immortalLevel++;
+            gameData.buyPrice += 5;
+            gameData.baseTime += 5;
+            saveGameData();
+            storeTotalScoreEl.innerText = gameData.totalScore;
+            buyPriceEl.innerText = gameData.buyPrice;
+            addTimeEl.innerText = gameData.baseTime;
+            immortalLevelEl.innerText = gameData.immortalLevel;
+            activateImmortal(gameData.baseTime);
+            closeStore();
+        }
+
+        function activateImmortal(addSec) {
+            isImmortal = true;
+            immortalTime += addSec;
+            timerEl.style.display = 'block';
+            timerEl.innerText = immortalTime;
+            if (immortalTimer) clearInterval(immortalTimer);
+            immortalTimer = setInterval(() => {
+                immortalTime--;
+                timerEl.innerText = immortalTime;
+                if (immortalTime <= 0) {
+                    clearInterval(immortalTimer);
+                    immortalTimer = null;
+                    isImmortal = false;
+                    timerEl.style.display = 'none';
+                }
+            }, 1000);
+        }
+
+        function saveSettings() {
+            gameData.obstacleFreq = parseInt(document.getElementById('freqSelect').value);
+            gameData.playerColor = document.getElementById('playerColor').value;
+            gameData.obsColor = document.getElementById('obsColor').value;
+            if (!gameData.playerImg) player.style.backgroundColor = gameData.playerColor;
+            if (!gameData.obsImg) obstacles.forEach(obs => obs.el.style.backgroundColor = gameData.obsColor);
+            saveGameData();
+            openModal('success', '保存成功', '设置已永久生效，双版本共用！');
+            setTimeout(() => { closeModalAndResetCount(); closeSettings(); }, 2000);
+        }
+
+        // 精准碰撞检测
+        function checkCollision(el1, el2) {
+            const r1 = el1.getBoundingClientRect();
+            const r2 = el2.getBoundingClientRect();
+            return !(
+                r1.right < r2.left + 2 || 
+                r1.left > r2.right - 2 || 
+                r1.bottom < r2.top + 2 || 
+                r1.top > r2.bottom - 2
+            );
+        }
+
+        function createObstacle() {
+            const obs = document.createElement('div');
+            obs.classList.add('obstacle');
+            if (gameData.obsImg) {
+                obs.style.backgroundImage = `url(${gameData.obsImg})`;
+                obs.style.backgroundColor = 'transparent';
+            } else {
+                obs.style.backgroundImage = 'none';
+                obs.style.backgroundColor = gameData.obsColor;
+            }
+            const x = Math.random() * (game.clientWidth - 60);
+            obs.style.left = x + 'px';
+            obs.style.top = '0px';
+            game.appendChild(obs);
+            obstacles.push({ el: obs, x: x, y: 0 });
+        }
+
+        function gameLoop(timestamp) {
+            if (!gameRunning) return;
+            if (gameOver || isPaused) {
+                requestAnimationFrame(gameLoop);
+                return;
+            }
+            if (timestamp - lastObstacleTime > gameData.obstacleFreq) {
+                createObstacle();
+                lastObstacleTime = timestamp;
+                obstacleSpeed = 3 + gameData.totalScore / 200;
+            }
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                const obs = obstacles[i];
+                obs.y += obstacleSpeed;
+                obs.el.style.top = obs.y + 'px';
+                if (!isImmortal && checkCollision(player, obs.el)) {
+                    gameOver = true;
+                    // 游戏结束，未存得分自动合并到总得分
+                    gameData.totalScore += currentScore;
+                    currentScore = 0;
+                    saveGameData();
+                    openModal('gameOver', '游戏结束', `本局得分：${gameData.totalScore - (gameData.totalScore - currentScore)}\n当前总得分：${gameData.totalScore}`);
+                    setTimeout(backToStart, 3000);
+                    break;
+                }
+                if (obs.y > game.clientHeight) {
+                    obs.el.remove();
+                    obstacles.splice(i, 1);
+                    currentScore++;
+                    currentScoreEl.innerText = currentScore;
+                }
+            }
+            requestAnimationFrame(gameLoop);
+        }
+
+        // === 控制逻辑（双版本独立操作，共用同一套游戏数据） ===
+        // 手机版：触屏控制，仅手机版生效
+        game.addEventListener('touchmove', (e) => {
+            if (gameOver || isPaused || gameVersion !== 'phone') return;
+            const touch = e.touches[0];
+            const rect = game.getBoundingClientRect();
+            let playerX = touch.clientX - rect.left - player.clientWidth / 2;
+            playerX = Math.max(0, Math.min(playerX, rect.width - player.clientWidth));
+            player.style.left = playerX + 'px';
         });
 
-        document.getElementById('bankBtn').addEventListener('click', () => {
-            alert('银行功能即将上线！');
+        // 电脑版：键盘←→/A/D控制，仅电脑版生效
+        document.addEventListener('keydown', (e) => {
+            if (gameOver || isPaused || gameVersion !== 'pc') return;
+            const rect = game.getBoundingClientRect();
+            let currentX = parseFloat(player.style.left) || (rect.width / 2 - player.clientWidth / 2);
+            if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') currentX -= keyStep;
+            if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') currentX += keyStep;
+            currentX = Math.max(0, Math.min(currentX, rect.width - player.clientWidth));
+            player.style.left = currentX + 'px';
         });
+
+        // === 页面初始化（双版本共用初始化，加载同一套互通数据） ===
+        window.onload = function() {
+            loadGameData(); // 打开即加载互通数据
+            initImageSelectors();
+        };
+        mask.addEventListener('click', closeModalAndResetCount);
+        customModal.addEventListener('click', (e) => { e.stopPropagation(); });
     </script>
 </body>
 </html>
