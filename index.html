@@ -22,7 +22,6 @@
             overflow: hidden;
             color: #fff;
         }
-        /* 版本选择界面 */
         #versionScreen {
             width: 100vw;
             height: 100vh;
@@ -64,7 +63,6 @@
         .pcVersion:hover {
             background: #d97706;
         }
-        /* 页面容器 */
         #startScreen, #gameScreen {
             width: 100vw;
             height: 100vh;
@@ -82,7 +80,6 @@
             justify-content: flex-start;
             padding-top: 20px;
         }
-        /* 返回上一级按钮 */
         .backPreBtn {
             position: absolute;
             top: 20px;
@@ -96,7 +93,6 @@
             cursor: pointer;
             z-index: 6;
         }
-        /* 主界面样式 - 标题仅遮盖指尖二字 */
         .titleBox {
             position: relative;
             margin-bottom: 20px;
@@ -166,7 +162,6 @@
         .resetBtn:hover {
             background: #dc2626;
         }
-        /* 游戏区域 */
         #game {
             width: 100%;
             height: 70vh;
@@ -197,7 +192,6 @@
             background-position: center;
             background-repeat: no-repeat;
         }
-        /* 金色砖块 - 触碰仅存分不死 核心样式 */
         .goldBrick {
             width: 50px;
             height: 50px;
@@ -209,7 +203,6 @@
             background-repeat: no-repeat;
             z-index: 8;
         }
-        /* 游戏UI - 移除存分按钮，新增广告领免死按钮 */
         .gameUI {
             width: 100%;
             display: flex;
@@ -239,7 +232,6 @@
         #backBtn {
             background: #64748b;
         }
-        /* 免死广告按钮 - 金色高亮 */
         #adImmortalBtn {
             background: #ffd700;
             color: #1e1e1e;
@@ -248,7 +240,6 @@
         #adImmortalBtn:hover {
             background: #fcd34d;
         }
-        /* 免死计时器 */
         #timer {
             position: absolute;
             bottom: 10px;
@@ -261,7 +252,6 @@
             z-index: 10;
             display: none;
         }
-        /* 暂停面板 - 替换为广告领免死按钮 */
         #pauseMenu {
             position: absolute;
             top: 0;
@@ -284,7 +274,6 @@
         #pauseMenu .adBtn:hover {
             background: #fcd34d;
         }
-        /* 商店/设置/自定义面板通用 */
         #storePanel, #settingsPanel, #customPanel {
             position: fixed;
             top: 0;
@@ -326,11 +315,9 @@
             border-radius: 5px;
             border: none;
         }
-        /* 隐藏文件选择框 */
         .fileInput {
             display: none;
         }
-        /* 遮罩层 */
         #mask {
             position: fixed;
             top: 0;
@@ -341,7 +328,6 @@
             z-index: 199;
             display: none;
         }
-        /* 自定义弹窗核心样式 */
         #customModal {
             position: fixed;
             top: 50%;
@@ -407,7 +393,6 @@
         .modal-btn:hover {
             opacity: 0.9;
         }
-        /* 10秒广告弹窗 核心样式（新增广告内容显示区） */
         #adModal {
             position: fixed;
             top: 50%;
@@ -428,7 +413,6 @@
             color: #ffd700;
             margin-bottom: 20px;
         }
-        /* 广告内容显示核心区 */
         .ad-content {
             font-size: 20px;
             color: #fff;
@@ -470,16 +454,70 @@
         .ad-close-btn:hover {
             opacity: 0.9;
         }
+        .version-hint {
+            position: fixed;
+            bottom: 15px;
+            left: 15px;
+            font-size: 14px;
+            color: #888;
+            z-index: 5;
+        }
+        #updatePanel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            padding: 20px;
+        }
+        .update-title {
+            font-size: 32px;
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+        .update-content {
+            width: 90%;
+            max-width: 400px;
+            background: #2d3748;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        .update-item {
+            font-size: 16px;
+            color: #fff;
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        .update-item strong {
+            color: #ffd700;
+        }
+        .update-btn {
+            margin-top: 20px;
+            padding: 12px 40px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            background: #3182ce;
+            color: #fff;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <!-- 版本选择界面（双版本数据互通） -->
     <div id="versionScreen">
         <div class="versionTitle">选择游玩版本</div>
         <button class="versionBtn phoneVersion" onclick="selectVersion('phone')">手机版</button>
         <button class="versionBtn pcVersion" onclick="selectVersion('pc')">电脑版</button>
     </div>
-    <!-- 主界面（免死商店改为升级时长） -->
     <div id="startScreen">
         <button class="backPreBtn" onclick="backToVersion()">回到上一级</button>
         <div class="titleBox" id="titleBox">
@@ -491,8 +529,8 @@
         <button class="btn storeBtn" onclick="openStore()">升级免死时长</button>
         <button class="btn settingsBtn" onclick="openSettings()">基础设置</button>
         <button class="btn customBtn" onclick="openCustomPanel()">自定义造型</button>
+        <div class="version-hint">v5.5</div>
     </div>
-    <!-- 游戏界面（移除存分按钮，新增广告领免死） -->
     <div id="gameScreen">
         <div class="gameUI">
             <button id="pauseBtn" onclick="togglePause()">暂停</button>
@@ -513,7 +551,6 @@
             </div>
         </div>
     </div>
-    <!-- 免死商店（升级时长，显示当前/升级后时长） -->
     <div id="storePanel">
         <h2>升级免死时长</h2>
         <div id="storeInfo">当前总得分: <span id="storeTotalScore">0</span></div>
@@ -523,7 +560,6 @@
         <button class="btn storeBtn" onclick="upgradeImmortalTime()">升级时长</button>
         <button class="btn" onclick="closeStore()">关闭</button>
     </div>
-    <!-- 基础设置面板 -->
     <div id="settingsPanel">
         <h2>基础设置</h2>
         <div class="settingItem">
@@ -550,7 +586,6 @@
         <button class="btn resetBtn" onclick="startResetVerify()">重置所有游戏数据</button>
         <button class="btn" onclick="closeSettings()">关闭</button>
     </div>
-    <!-- 自定义造型面板（金色砖块图片自定义） -->
     <div id="customPanel">
         <h2>自定义造型设置</h2>
         <div class="settingItem">
@@ -577,7 +612,6 @@
         </div>
         <button class="btn" onclick="closeCustomPanel()">完成设置</button>
     </div>
-    <!-- 自定义弹窗相关 -->
     <div id="mask"></div>
     <div id="customModal">
         <div class="modal-title" id="modalTitle">温馨提示</div>
@@ -588,10 +622,8 @@
             <button class="modal-btn modal-confirm" id="modalConfirm" onclick="modalConfirmClick()">确认</button>
         </div>
     </div>
-    <!-- 10秒广告弹窗 核心DOM（新增广告内容区） -->
     <div id="adModal">
         <div class="ad-title">观看广告领取免死金牌</div>
-        <!-- 广告随机内容显示区 -->
         <div class="ad-content" id="adContent"></div>
         <div class="ad-progress">
             <div class="ad-progress-bar" id="adProgressBar"></div>
@@ -599,32 +631,40 @@
         <div class="ad-time" id="adTime">剩余：10 秒</div>
         <button class="ad-close-btn" id="adCloseBtn" onclick="closeAdModal()">关闭</button>
     </div>
+    <div id="updatePanel">
+        <div class="update-title">更新公告</div>
+        <div class="update-content">
+            <div class="update-item"><strong>5.5</strong>：免死金牌回归，欢迎使用！顺便把按钮做成了砖块</div>
+            <div class="update-item"><strong>5.0</strong>：新增了一个可以把当前得分带出游戏的按钮</div>
+            <div class="update-item"><strong>4.0</strong>：游戏新增清除所有数据，玩腻了就清除吧！</div>
+            <div class="update-item"><strong>3.0</strong>：支持自定义造型和颜色，想让长什么样就长什么样！</div>
+            <div class="update-item"><strong>2.0</strong>：游戏新增主界面，再也不怕迷路了</div>
+            <div class="update-item"><strong>1.0</strong>：游戏公测</div>
+        </div>
+        <button class="update-btn" onclick="closeUpdatePanel()">我知道了</button>
+    </div>
 
     <script>
-        // === 全局核心配置（双版本数据互通，共用localStorage） ===
         const currentYear = new Date().getFullYear();
         let resetRemindCount = 0;
         let modalType = '';
-        let gameVersion = ''; // phone/pc 控制操作+广告版本名
-        const keyStep = 15; // 电脑版键盘步长
-        const goldBrickInterval = 15000; // 金色砖块独立生成间隔(ms)，与障碍物分离
-        let lastGoldBrickTime = 0; // 最后生成金色砖块时间
-        // === 存档数据结构（含金色砖块图片、免死时长等级） ===
+        let gameVersion = '';
+        const keyStep = 15;
+        const goldBrickInterval = 15000;
+        let lastGoldBrickTime = 0;
         let gameData = {
-            totalScore: 0,          // 唯一总得分，金色砖块触碰自动存入
-            immortalTime: 10,       // 免死基础时长（商店升级）
-            buyPrice: 10,           // 免死升级价格
-            obstacleFreq: 1000,     // 障碍物频率，双版本互通
-            playerColor: '#3182ce', // 玩家颜色
-            obsColor: '#e53e3e',    // 障碍物颜色
-            playerImg: '',          // 玩家图片
-            obsImg: '',             // 障碍物图片
-            goldBrickImg: ''        // 金色砖块图片
+            totalScore: 0,
+            immortalTime: 10,
+            buyPrice: 10,
+            obstacleFreq: 1000,
+            playerColor: '#3182ce',
+            obsColor: '#e53e3e',
+            playerImg: '',
+            obsImg: '',
+            goldBrickImg: ''
         };
-        // === DOM元素获取（新增金色砖块、广告相关元素） ===
         const versionScreen = document.getElementById('versionScreen');
         const titleBox = document.getElementById('titleBox');
-        // 核心分数UI
         const totalScoreEl = document.getElementById('totalScore');
         const immortalTimeLevelEl = document.getElementById('immortalTimeLevel');
         const currentScoreEl = document.getElementById('currentScore');
@@ -632,7 +672,6 @@
         const buyPriceEl = document.getElementById('buyPrice');
         const addTimeEl = document.getElementById('addTime');
         const nextTimeEl = document.getElementById('nextTime');
-        // 面板元素
         const startScreen = document.getElementById('startScreen');
         const gameScreen = document.getElementById('gameScreen');
         const game = document.getElementById('game');
@@ -641,7 +680,6 @@
         const storePanel = document.getElementById('storePanel');
         const settingsPanel = document.getElementById('settingsPanel');
         const customPanel = document.getElementById('customPanel');
-        // 免死与游戏状态
         const timerEl = document.getElementById('timer');
         let currentScore = 0;
         let gameRunning = false;
@@ -651,28 +689,25 @@
         let immortalLeftTime = 0;
         let immortalTimer = null;
         let obstacles = [];
-        let goldBricks = []; // 金色砖块数组
+        let goldBricks = [];
         let lastObstacleTime = 0;
         let obstacleSpeed = 3;
-        // 弹窗元素
         const mask = document.getElementById('mask');
         const customModal = document.getElementById('customModal');
         const modalTitle = document.getElementById('modalTitle');
         const modalContent = document.getElementById('modalContent');
         const modalInput = document.getElementById('modalInput');
         const modalConfirm = document.getElementById('modalConfirm');
-        // 广告弹窗元素（新增广告内容区）
         const adModal = document.getElementById('adModal');
         const adContent = document.getElementById('adContent');
         const adProgressBar = document.getElementById('adProgressBar');
         const adTimeEl = document.getElementById('adTime');
         const adCloseBtn = document.getElementById('adCloseBtn');
+        const updatePanel = document.getElementById('updatePanel');
         let adTimer = null;
         let adLeftTime = 10;
 
-        // === 广告内容池（含25%概率特殊广告+版本自适应） ===
         function getRandomAdContent() {
-            // 基础广告池（9条，75%概率）
             const baseAds = [
                 '京东0.01元大甩购',
                 '拼多多6202恋爱补贴',
@@ -684,17 +719,12 @@
                 '额…为什么要看我？',
                 '游戏由陶阳样制作！'
             ];
-            // 高概率广告（25%）
             const highProbAd = '看到我的发大财';
-            // 版本自适应广告
             const versionAd = `你知道吗？其实你正在玩的游戏是${gameVersion === 'phone' ? '指尖躲避' : '键盘躲避'}哦！`;
-            // 合并所有广告（baseAds+versionAd 共10条，+highProbAd 总计11条，实现25%概率）
             const allAds = [...baseAds, versionAd, highProbAd, highProbAd, highProbAd];
-            // 随机选一条
             return allAds[Math.floor(Math.random() * allAds.length)];
         }
 
-        // === 自定义弹窗核心方法 ===
         function openModal(type, title, content, needInput = false) {
             mask.style.display = 'block';
             customModal.style.display = 'block';
@@ -709,12 +739,14 @@
                 modalInput.style.display = 'none';
             }
         }
+
         function closeModalAndResetCount() {
             mask.style.display = 'none';
             customModal.style.display = 'none';
             resetRemindCount = 0;
             modalType = '';
         }
+
         function modalConfirmClick() {
             switch (modalType) {
                 case 'remind1': handleRemind1Confirm(); break;
@@ -727,19 +759,21 @@
             }
         }
 
-        // === 重置验证逻辑 ===
         function startResetVerify() {
             resetRemindCount = 1;
             openModal('remind1','第一次确认','确定要重置游戏数据吗？数据清除后将不可恢复，还需确认2次');
         }
+
         function handleRemind1Confirm() {
             resetRemindCount = 2;
             openModal('remind2','第二次确认','最后警告！重置将清除所有得分、等级、自定义造型和设置，还需确认1次');
         }
+
         function handleRemind2Confirm() {
             resetRemindCount = 3;
             openModal('remind3','第三次确认','即将进入验证环节！请确认是否继续，下一步需输入当前年份完成最终验证');
         }
+
         function handleVerifyConfirm() {
             const inputYear = parseInt(modalInput.value);
             if (isNaN(inputYear) || inputYear !== currentYear) {
@@ -754,6 +788,7 @@
             resetRemindCount = 0;
             modalType = '';
         }
+
         function resetAllGameData() {
             gameData = { 
                 totalScore:0, immortalTime:10, buyPrice:10, obstacleFreq:1000,
@@ -769,7 +804,6 @@
             setTimeout(closeModalAndResetCount, 3000);
         }
 
-        // === 存档核心方法 ===
         function loadGameData() {
             const saved = localStorage.getItem('fingerDodgeData');
             if (saved) {
@@ -785,15 +819,14 @@
                 applyCustomStyles();
             }
         }
+
         function saveGameData() {
             localStorage.setItem('fingerDodgeData', JSON.stringify(gameData));
             totalScoreEl.innerText = gameData.totalScore;
             immortalTimeLevelEl.innerText = gameData.immortalTime;
         }
 
-        // === 自定义造型方法（金色砖块图片适配） ===
         function applyCustomStyles() {
-            // 玩家造型
             if (gameData.playerImg) {
                 player.style.backgroundImage = `url(${gameData.playerImg})`;
                 player.style.backgroundColor = 'transparent';
@@ -801,7 +834,6 @@
                 player.style.backgroundImage = 'none';
                 player.style.backgroundColor = gameData.playerColor;
             }
-            // 障碍物造型
             obstacles.forEach(obs => {
                 if (gameData.obsImg) {
                     obs.el.style.backgroundImage = `url(${gameData.obsImg})`;
@@ -811,7 +843,6 @@
                     obs.el.style.backgroundColor = gameData.obsColor;
                 }
             });
-            // 金色砖块造型
             goldBricks.forEach(brick => {
                 if (gameData.goldBrickImg) {
                     brick.el.style.backgroundImage = `url(${gameData.goldBrickImg})`;
@@ -822,8 +853,8 @@
                 }
             });
         }
+
         function initImageSelectors() {
-            // 玩家图片
             document.getElementById('playerImgSelector').addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -835,7 +866,6 @@
                     setTimeout(closeModalAndResetCount, 2000);
                 });
             });
-            // 障碍物图片
             document.getElementById('obsImgSelector').addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -847,7 +877,6 @@
                     setTimeout(closeModalAndResetCount, 2000);
                 });
             });
-            // 金色砖块图片
             document.getElementById('goldBrickImgSelector').addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -860,7 +889,7 @@
                 });
             });
         }
-        // 图片读取适配（尺寸参数）
+
         function readImageFile(file, w, h, callback) {
             const reader = new FileReader();
             reader.onload = (event) => {
@@ -878,6 +907,7 @@
             };
             reader.readAsDataURL(file);
         }
+
         function restoreDefaultStyles() {
             gameData.playerImg = ''; gameData.obsImg = ''; gameData.goldBrickImg = '';
             gameData.playerColor = '#3182ce'; gameData.obsColor = '#e53e3e';
@@ -889,11 +919,9 @@
             setTimeout(closeModalAndResetCount, 2000);
         }
 
-        // === 金色砖块核心逻辑（独立生成+触碰仅存分不死 核心优化） ===
         function createGoldBrick() {
             const brick = document.createElement('div');
             brick.classList.add('goldBrick');
-            // 应用自定义造型
             if (gameData.goldBrickImg) {
                 brick.style.backgroundImage = `url(${gameData.goldBrickImg})`;
                 brick.style.backgroundColor = 'transparent';
@@ -901,19 +929,17 @@
                 brick.style.backgroundImage = 'none';
                 brick.style.backgroundColor = '#ffd700';
             }
-            // 随机生成位置（避开边缘，与障碍物无关联）
             const x = Math.random() * (game.clientWidth - 50);
             brick.style.left = x + 'px';
             brick.style.top = '0px';
             game.appendChild(brick);
             goldBricks.push({ el: brick, x: x, y: 0 });
         }
-        // 金色砖块触碰检测（仅存分，不死，不终止游戏）
+
         function checkGoldBrickCollision() {
             for (let i = goldBricks.length - 1; i >= 0; i--) {
                 const brick = goldBricks[i];
                 if (checkCollision(player, brick.el)) {
-                    // 触碰后仅存分，无死亡判定
                     if (currentScore > 0) {
                         gameData.totalScore += currentScore;
                         const saveNum = currentScore;
@@ -926,12 +952,10 @@
                         openModal('success', '提示', '金色砖块触碰成功！当前无得分可存入～');
                         setTimeout(closeModalAndResetCount, 1000);
                     }
-                    // 移除金色砖块，游戏继续
                     brick.el.remove();
                     goldBricks.splice(i, 1);
                     return;
                 }
-                // 超出屏幕移除
                 if (brick.y > game.clientHeight) {
                     brick.el.remove();
                     goldBricks.splice(i, 1);
@@ -939,41 +963,37 @@
             }
         }
 
-        // === 10秒广告领免死 核心逻辑（新增随机广告内容） ===
         function openAdModal() {
             if (isImmortal) {
                 openModal('error', '操作失败', '当前已拥有免死金牌，无需重复领取！');
                 return;
             }
-            // 初始化广告弹窗：加载随机广告内容
             adContent.innerText = getRandomAdContent();
             adModal.style.display = 'block';
             adLeftTime = 10;
             adProgressBar.style.width = '0%';
             adTimeEl.innerText = `剩余：${adLeftTime} 秒`;
             adCloseBtn.style.display = 'none';
-            // 启动广告倒计时
             adTimer = setInterval(() => {
                 adLeftTime--;
                 const progress = (10 - adLeftTime) / 10 * 100;
                 adProgressBar.style.width = `${progress}%`;
                 adTimeEl.innerText = `剩余：${adLeftTime} 秒`;
-                // 广告结束
                 if (adLeftTime <= 0) {
                     clearInterval(adTimer);
                     adProgressBar.style.width = '100%';
                     adTimeEl.innerText = '广告结束！已领取免死金牌';
                     adCloseBtn.style.display = 'block';
-                    // 激活免死金牌（时长为商店升级后的值）
                     activateImmortal(gameData.immortalTime);
                 }
             }, 1000);
         }
+
         function closeAdModal() {
             clearInterval(adTimer);
             adModal.style.display = 'none';
         }
-        // 免死金牌激活（适配商店升级时长）
+
         function activateImmortal(time) {
             isImmortal = true;
             immortalLeftTime = time;
@@ -992,17 +1012,14 @@
             }, 1000);
         }
 
-        // === 免死商店升级逻辑 ===
         function upgradeImmortalTime() {
             if (gameData.totalScore < gameData.buyPrice) {
                 openModal('error', '操作失败', '总得分不足，无法升级免死时长！');
                 return;
             }
-            // 扣除分数，升级时长
             gameData.totalScore -= gameData.buyPrice;
             gameData.immortalTime += 5;
             gameData.buyPrice += 10;
-            // 更新数据与UI
             saveGameData();
             storeTotalScoreEl.innerText = gameData.totalScore;
             buyPriceEl.innerText = gameData.buyPrice;
@@ -1013,13 +1030,14 @@
             setTimeout(closeModalAndResetCount, 2000);
         }
 
-        // === 面板控制方法 ===
         function selectVersion(version) {
             gameVersion = version;
             versionScreen.style.display = 'none';
             startScreen.style.display = 'flex';
             titleBox.classList.toggle('pcTitle', version === 'pc');
+            updatePanel.style.display = 'flex';
         }
+
         function backToVersion() {
             startScreen.style.display = 'none';
             versionScreen.style.display = 'flex';
@@ -1030,24 +1048,33 @@
             customPanel.style.display = 'none';
             closeModalAndResetCount();
         }
+
         function openStore() {
             if (gameOver) return;
             storeTotalScoreEl.innerText = gameData.totalScore;
             storePanel.style.display = 'flex';
         }
+
         function closeStore() { storePanel.style.display = 'none'; }
+
         function openSettings() {
             settingsPanel.style.display = 'flex';
             resetRemindCount = 0;
         }
+
         function closeSettings() {
             settingsPanel.style.display = 'none';
             resetRemindCount = 0;
         }
+
         function openCustomPanel() { customPanel.style.display = 'flex'; }
+
         function closeCustomPanel() { customPanel.style.display = 'none'; }
 
-        // === 游戏核心逻辑（金色砖块独立生成+碰撞优化） ===
+        function closeUpdatePanel() {
+            updatePanel.style.display = 'none';
+        }
+
         function startGame() {
             currentScore = 0;
             currentScoreEl.innerText = currentScore;
@@ -1056,10 +1083,8 @@
             isImmortal = false;
             immortalLeftTime = 0;
             timerEl.style.display = 'none';
-            // 重置生成时间，避免开局立即生成
             lastObstacleTime = 0;
             lastGoldBrickTime = 0;
-            // 清除所有元素
             obstacles.forEach(obs => obs.el.remove());
             goldBricks.forEach(brick => brick.el.remove());
             obstacles = [];
@@ -1073,14 +1098,13 @@
                 requestAnimationFrame(gameLoop);
             }
         }
+
         function backToStart() {
-            // 未存的当前得分自动合并
             if (currentScore > 0) {
                 gameData.totalScore += currentScore;
                 currentScore = 0;
                 saveGameData();
             }
-            // 清理计时器
             if (immortalTimer) {
                 clearInterval(immortalTimer);
                 immortalTimer = null;
@@ -1093,7 +1117,6 @@
             immortalLeftTime = 0;
             timerEl.style.display = 'none';
             adModal.style.display = 'none';
-            // 清理元素
             obstacles.forEach(obs => obs.el.remove());
             goldBricks.forEach(brick => brick.el.remove());
             obstacles = [];
@@ -1107,10 +1130,12 @@
             pauseMenu.style.display = 'none';
             closeModalAndResetCount();
         }
+
         function togglePause() {
             isPaused = !isPaused;
             pauseMenu.style.display = isPaused ? 'flex' : 'none';
         }
+
         function saveSettings() {
             gameData.obstacleFreq = parseInt(document.getElementById('freqSelect').value);
             gameData.playerColor = document.getElementById('playerColor').value;
@@ -1121,7 +1146,7 @@
             openModal('success', '保存成功', '设置已永久生效，双版本共用！');
             setTimeout(() => { closeModalAndResetCount(); closeSettings(); }, 2000);
         }
-        // 精准碰撞检测
+
         function checkCollision(el1, el2) {
             const r1 = el1.getBoundingClientRect();
             const r2 = el2.getBoundingClientRect();
@@ -1132,6 +1157,7 @@
                 r1.top > r2.bottom - 2
             );
         }
+
         function createObstacle() {
             const obs = document.createElement('div');
             obs.classList.add('obstacle');
@@ -1148,30 +1174,26 @@
             game.appendChild(obs);
             obstacles.push({ el: obs, x: x, y: 0 });
         }
-        // 游戏主循环（金色砖块独立生成+碰撞分离 核心优化）
+
         function gameLoop(timestamp) {
             if (!gameRunning) return;
             if (gameOver || isPaused) {
                 requestAnimationFrame(gameLoop);
                 return;
             }
-            // 1. 独立生成红色障碍物（原有逻辑）
             if (timestamp - lastObstacleTime > gameData.obstacleFreq) {
                 createObstacle();
                 lastObstacleTime = timestamp;
                 obstacleSpeed = 3 + gameData.totalScore / 200;
             }
-            // 2. 独立生成金色砖块（与障碍物无关联，固定间隔）
             if (timestamp - lastGoldBrickTime > goldBrickInterval) {
                 createGoldBrick();
                 lastGoldBrickTime = timestamp;
             }
-            // 3. 更新红色障碍物位置+碰撞检测（仅障碍物致死）
             for (let i = obstacles.length - 1; i >= 0; i--) {
                 const obs = obstacles[i];
                 obs.y += obstacleSpeed;
                 obs.el.style.top = obs.y + 'px';
-                // 仅红色障碍物有死亡碰撞，金色砖块无
                 if (!isImmortal && checkCollision(player, obs.el)) {
                     gameOver = true;
                     gameData.totalScore += currentScore;
@@ -1181,7 +1203,6 @@
                     setTimeout(backToStart, 3000);
                     break;
                 }
-                // 超出屏幕移除
                 if (obs.y > game.clientHeight) {
                     obs.el.remove();
                     obstacles.splice(i, 1);
@@ -1189,7 +1210,6 @@
                     currentScoreEl.innerText = currentScore;
                 }
             }
-            // 4. 更新金色砖块位置+单独碰撞检测（仅存分，不死）
             for (let i = goldBricks.length - 1; i >= 0; i--) {
                 const brick = goldBricks[i];
                 brick.y += obstacleSpeed;
@@ -1199,8 +1219,6 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // === 控制逻辑（双版本独立操作） ===
-        // 手机版：触屏控制
         game.addEventListener('touchmove', (e) => {
             if (gameOver || isPaused || gameVersion !== 'phone') return;
             const touch = e.touches[0];
@@ -1209,7 +1227,7 @@
             playerX = Math.max(0, Math.min(playerX, rect.width - player.clientWidth));
             player.style.left = playerX + 'px';
         });
-        // 电脑版：键盘←→/A/D控制
+
         document.addEventListener('keydown', (e) => {
             if (gameOver || isPaused || gameVersion !== 'pc') return;
             const rect = game.getBoundingClientRect();
@@ -1220,11 +1238,11 @@
             player.style.left = currentX + 'px';
         });
 
-        // === 页面初始化 ===
         window.onload = function() {
             loadGameData();
             initImageSelectors();
         };
+
         mask.addEventListener('click', closeModalAndResetCount);
         customModal.addEventListener('click', (e) => { e.stopPropagation(); });
         adModal.addEventListener('click', (e) => { e.stopPropagation(); });
